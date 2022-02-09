@@ -43,25 +43,14 @@ export class ChartComponent implements OnInit, AfterViewInit, OnDestroy {
       anchors: [AnchorLocations.TopRight, AnchorLocations.TopRight],
     });
 
-    this.browserJsPlumbInstance.manageAll([
-      document.getElementById('dragDropWindow1')!,
-      document.getElementById('dragDropWindow2')!,
-      document.getElementById('dragDropWindow3')!,
-      document.getElementById('dragDropWindow4')!,
-    ]);
-
-    this.nodes.controls.forEach((control, i) =>
-      this.browserJsPlumbInstance.manage(
-        document.getElementById(this.nodeGroup.get(`nodes.${i}.id`)?.value)!
-      )
-    );
+    this.browserJsPlumbInstance.manageAll('.dnd');
   }
 
   ngOnInit(): void {
     for (let x = 0; x < 10; ++x) {
       const node = this.formBuilder.group({
         id: x,
-        title: 'Test',
+        title: 'Test' + x,
         desc: 'Dummy',
       });
 
