@@ -1,8 +1,12 @@
+<div>
+        <button (click)="toJson()">toJson</button>
+</div>
 <div class="jtk-demo-canvas canvas-wide drag-drop-demo jtk-surface jtk-surface-nopan" id="canvas" #canvas
         [formGroup]="nodeGroup">
 
         <ng-container *ngFor="let currentNode of nodes.controls; let i=index" formArrayName="nodes">
-                <div class="window dnd" id="{{currentNode.get('id')?.value}}">
+                <div class="window dnd" id="{{currentNode.get('id')?.value}}"
+                        style="{{currentNode.get('style')?.value}}">
                         {{currentNode.get('title')?.value}}
                         <br /><br /><a href="#" class="cmdLink hide" rel="{{currentNode.get('id')?.value}}">toggle
                                 connections</a><br /><a href="#" class="cmdLink drag"
