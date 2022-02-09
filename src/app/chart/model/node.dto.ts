@@ -5,6 +5,7 @@ import { RectDto } from './rect.dto';
 export class NodeDto {
   constructor(
     public readonly id: string,
+    public readonly title: string,
     public readonly rect: RectDto,
     public readonly endpoints: EndpointDto[]
   ) {}
