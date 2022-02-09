@@ -17,6 +17,7 @@ import { ChartDto } from './model/chart.dto';
 import { ConnectionDto } from './model/connection.dto';
 import { EndpointDto } from './model/endpoint.dto';
 import { NodeDto } from './model/node.dto';
+import { RectDto } from './model/rect.dto';
 
 @Component({
   selector: 'app-chart',
@@ -99,11 +100,12 @@ export class ChartComponent implements OnInit, AfterViewInit, OnDestroy {
     const connections: ConnectionDto[] = [];
 
     const elements = this.browserJsPlumbInstance.getManagedElements();
-    Object.entries(elements).forEach((element) => {
-      const id = element[0];
+    Object.entries(elements).forEach((managed) => {
+      const id = managed[0];
+      const element = managed[1];
 
       const endpoints: EndpointDto[] = [];
-      element[1].endpoints?.forEach((endpoint) => {
+      element.endpoints?.forEach((endpoint) => {
         endpoints.push(new EndpointDto(endpoint.uuid));
 
         endpoint.connections.forEach((connection) => {
@@ -113,7 +115,18 @@ export class ChartComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
 
-      nodes.push(new NodeDto(id, endpoints));
+      nodes.push(
+        new NodeDto(
+          id,
+          new RectDto(
+            element.viewportElement?.x,
+            element.viewportElement?.y,
+            element.viewportElement?.w,
+            element.viewportElement?.h
+          ),
+          endpoints
+        )
+      );
     });
 
     console.log(JSON.stringify(new ChartDto('Test', nodes, connections)));
