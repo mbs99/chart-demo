@@ -1,0 +1,29 @@
+<div class="jtk-demo-canvas canvas-wide drag-drop-demo jtk-surface jtk-surface-nopan" id="canvas" #canvas
+        [formGroup]="nodeGroup">
+        <div class="window" id="dragDropWindow1">one<br /><br /><a href="#" class="cmdLink hide"
+                        rel="dragDropWindow1">toggle connections</a><br /><a href="#" class="cmdLink drag"
+                        rel="dragDropWindow1">disable dragging</a><br /><a href="#" class="cmdLink detach"
+                        rel="dragDropWindow1">detach all</a></div>
+        <div class="window" id="dragDropWindow2">two<br /><br /><a href="#" class="cmdLink hide"
+                        rel="dragDropWindow2">toggle connections</a><br /><a href="#" class="cmdLink drag"
+                        rel="dragDropWindow2">disable dragging</a><br /><a href="#" class="cmdLink detach"
+                        rel="dragDropWindow2">detach all</a></div>
+        <div class="window" id="dragDropWindow3">three<br /><br /><a href="#" class="cmdLink hide"
+                        rel="dragDropWindow3">toggle connections</a><br /><a href="#" class="cmdLink drag"
+                        rel="dragDropWindow3">disable dragging</a><br /><a href="#" class="cmdLink detach"
+                        rel="dragDropWindow3">detach all</a></div>
+        <div class="window" id="dragDropWindow4">four<br /><br /><a href="#" class="cmdLink hide"
+                        rel="dragDropWindow4">toggle connections</a><br /><a href="#" class="cmdLink drag"
+                        rel="dragDropWindow4">disable dragging</a><br /><a href="#" class="cmdLink detach"
+                        rel="dragDropWindow4">detach all</a></div>
+
+        <ng-container *ngFor="let currentNode of nodes.controls; let i=index" formArrayName="nodes">
+                <div class="window" id="{{nodes.controls[i].get('id')?.value}}">
+                        <br /><br /><a href="#" class="cmdLink hide" rel="dragDropWindow4">toggle
+                                connections</a><br /><a href="#" class="cmdLink drag" rel="dragDropWindow4">disable
+                                dragging</a><br /><a href="#" class="cmdLink detach" rel="dragDropWindow4">detach
+                                all</a>
+                </div>
+        </ng-container>
+
+</div>
