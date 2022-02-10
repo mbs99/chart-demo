@@ -2,7 +2,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
   OnInit,
+  Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
@@ -21,17 +26,30 @@ import { RectDto } from '../model/rect.dto';
   templateUrl: './chart-view.component.html',
   styleUrls: ['./chart-view.component.css'],
 })
-export class ChartViewComponent implements OnInit, AfterViewInit {
-  private data: string = '';
-  private browserJsPlumbInstance!: BrowserJsPlumbInstance;
+export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('canvas') canvasElement!: ElementRef;
+
+  @Output('export') exportEvent = new EventEmitter<string>();
+  @Input() chart: string = '';
+  @Input() triggerExport: boolean = false;
 
   nodeGroup: FormGroup;
   nodes: FormArray;
 
+  private browserJsPlumbInstance!: BrowserJsPlumbInstance;
+
   constructor(private formBuilder: FormBuilder) {
     this.nodes = this.formBuilder.array([]);
     this.nodeGroup = this.formBuilder.group({ nodes: this.nodes });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['triggerExport'] && !changes['triggerExport'].firstChange) {
+      this.toJson();
+    }
+    if (changes['chart'] && !changes['chart'].firstChange) {
+      const json = changes['chart'];
+      this.fromJson();
+    }
   }
 
   ngOnInit(): void {
@@ -126,7 +144,9 @@ export class ChartViewComponent implements OnInit, AfterViewInit {
       );
     });
 
-    this.data = JSON.stringify(new ChartDto('Test', nodes, connections));
+    this.exportEvent.emit(
+      JSON.stringify(new ChartDto('Test', nodes, connections))
+    );
   }
 
   public fromJson() {
@@ -134,7 +154,9 @@ export class ChartViewComponent implements OnInit, AfterViewInit {
     this.nodes.reset();
     this.nodes = this.formBuilder.array([]);
 
-    const chart: ChartDto = JSON.parse(this.data);
+    this.browserJsPlumbInstance.reset();
+
+    const chart: ChartDto = JSON.parse(this.chart);
 
     chart.nodes.forEach((node) => {
       const nodeGroup = this.formBuilder.group({

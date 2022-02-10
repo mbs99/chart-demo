@@ -1,5 +1,6 @@
 <div>
-
+    <button (click)="toggleExportTrigger()">toggleExport</button>
+    <button (click)="loadChart()">load</button>
 </div>
 
-<app-chart-view></app-chart-view>
+<app-chart-view [chart]="chart" [triggerExport]="exportTrigger" (export)="storeChart($event)"></app-chart-view>

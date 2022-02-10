@@ -28,6 +28,10 @@ export class ChartComponent implements OnInit, OnDestroy {
   private chartId: string = '';
   private routeSubscription: Subscription;
 
+  chart: string = '{}';
+  exportTrigger: boolean = false;
+  storedChart: string = '';
+
   constructor(private avtivatedRoute: ActivatedRoute) {
     this.routeSubscription = avtivatedRoute.params.subscribe((params) => {
       this.chartId = params['id'];
@@ -39,4 +43,16 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {}
+
+  storeChart(json: string) {
+    this.storedChart = json;
+  }
+
+  toggleExportTrigger() {
+    this.exportTrigger = !this.exportTrigger;
+  }
+
+  loadChart() {
+    this.chart = this.storedChart;
+  }
 }
