@@ -15,7 +15,7 @@ import { BrowserJsPlumbInstance } from '@jsplumb/browser-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { ChartDto } from '../model/chart.dto';
 import { AnchorLocations } from '@jsplumb/common';
-import { EndpointOptions } from '@jsplumb/core';
+import { Connection, EndpointOptions } from '@jsplumb/core';
 import { NodeDto } from '../model/node.dto';
 import { ConnectionDto } from '../model/connection.dto';
 import { EndpointDto } from '../model/endpoint.dto';
@@ -65,6 +65,8 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
 
       this.nodes.insert(0, node);
     }
+
+    this.onChanges();
   }
 
   ngAfterViewInit(): void {
@@ -81,12 +83,34 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
 
     //this.browserJsPlumbInstance.manageAll('.dnd');
 
-    this.nodes.controls.forEach((control) => {
-      this.browserJsPlumbInstance.addEndpoint(
-        document.getElementById(control.get('id')?.value)!,
-        { anchor: [0.5, 1, 0, 1] },
-        this.createEndpoint()
+    this.browserJsPlumbInstance.batch(() => {
+      this.browserJsPlumbInstance.bind(
+        'connection:click',
+        (component, originalEvent) => {
+          if (component instanceof Connection) {
+            const connection = component as Connection;
+
+            const label = window.prompt('Set label:');
+
+            if (label) {
+              connection.setLabel(label);
+            }
+          }
+        }
       );
+
+      this.browserJsPlumbInstance.bind(
+        'connection',
+        (info, originalEvent) => {}
+      );
+
+      this.nodes.controls.forEach((control) => {
+        this.browserJsPlumbInstance.addEndpoint(
+          document.getElementById(control.get('id')?.value)!,
+          { anchor: [0.5, 1, 0, 1] },
+          this.createEndpoint()
+        );
+      });
     });
   }
 
@@ -169,6 +193,44 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
       });
 
       this.nodes.insert(0, nodeGroup);
+    });
+  }
+
+  addNode() {
+    const node = this.formBuilder.group({
+      id: uuidv4(),
+      title: 'Test',
+      desc: 'Dummy',
+      top: 0,
+      left: 0,
+      style: `top: 0px; left:0px`,
+    });
+
+    this.nodes.insert(0, node);
+  }
+
+  onChanges(): void {}
+
+  onDomChange(event: MutationRecord) {
+    event.addedNodes?.forEach((node) => {
+      if (node.nodeType == node.ELEMENT_NODE) {
+        const e: Element = node as Element;
+        if (null != e.id && '' !== e.id) {
+          if (
+            !this.browserJsPlumbInstance
+              .getEndpoints(document.getElementById(e.id)!)
+              .find((endpoint) => {
+                endpoint.getId() == e.id;
+              })
+          ) {
+            this.browserJsPlumbInstance.addEndpoint(
+              document.getElementById(e.id)!,
+              { anchor: [0.5, 1, 0, 1] },
+              this.createEndpoint()
+            );
+          }
+        }
+      }
     });
   }
 }

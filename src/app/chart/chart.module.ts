@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ChartViewComponent } from './chart-view/chart-view.component';
 import { ChartComponent } from './chart.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DomChangeDirective } from './dom-change.directive';
 
 @NgModule({
-  declarations: [ChartComponent, ChartViewComponent],
+  declarations: [ChartComponent, ChartViewComponent, DomChangeDirective],
   imports: [CommonModule, ReactiveFormsModule],
   exports: [ChartComponent],
 })
