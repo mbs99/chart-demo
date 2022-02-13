@@ -7,9 +7,12 @@
     <ng-container *ngFor=" let currentNode of nodes.controls; let i=index" formArrayName="nodes">
         <div class="window dnd" id="{{currentNode.get('id')?.value}}" style="{{currentNode.get('style')?.value}}">
             {{currentNode.get('title')?.value}}
-            <br /><br /><a href="#" class="cmdLink hide" rel="{{currentNode.get('id')?.value}}">toggle
-                connections</a><br /><a href="#" class="cmdLink drag" rel="{{currentNode.get('id')?.value}}">disable
-                dragging</a><br /><a href="#" class="cmdLink detach" rel="{{currentNode.get('id')?.value}}">detach
+            <br /><br /><a href="#" class="cmdLink hide" rel="{{currentNode.get('id')?.value}}"
+                (click)="onClickToggleConnections(currentNode.get('id')?.value)">toggle
+                connections</a><br /><a href="#" class="cmdLink drag" rel="{{currentNode.get('id')?.value}}"
+                (click)="onClickDrag(currentNode.get('id')?.value)">{{currentNode.get('draggingLabel')?.value}}</a><br /><a
+                href="/chart" class="cmdLink detach" rel="{{currentNode.get('id')?.value}}"
+                (click)="onClickDetach(currentNode.get('id')?.value)">detach
                 all</a>
             <p>{{currentNode.get('desc')?.value}}</p>
         </div>

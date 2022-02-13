@@ -10,7 +10,12 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+} from '@angular/forms';
 import { BrowserJsPlumbInstance } from '@jsplumb/browser-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { ChartDto } from '../model/chart.dto';
@@ -20,6 +25,7 @@ import { NodeDto } from '../model/node.dto';
 import { ConnectionDto } from '../model/connection.dto';
 import { EndpointDto } from '../model/endpoint.dto';
 import { RectDto } from '../model/rect.dto';
+import { zipWith } from 'rxjs';
 
 @Component({
   selector: 'app-chart-view',
@@ -61,6 +67,7 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
         top: 0,
         left: x * 20,
         style: `top: 0px; left:${x}${5}px`,
+        draggingLabel: 'disable dragging',
       });
 
       this.nodes.insert(0, node);
@@ -209,7 +216,9 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
     this.nodes.insert(0, node);
   }
 
-  onChanges(): void {}
+  onChanges(): void {
+    console.log('onChanges');
+  }
 
   onDomChange(event: MutationRecord) {
     event.addedNodes?.forEach((node) => {
@@ -232,5 +241,38 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }
     });
+  }
+
+  onClickDrag(id: string) {
+    this.browserJsPlumbInstance.toggleDraggable(document.getElementById(id)!);
+
+    const label = this.nodes.controls
+      .find((control) => control.get('id')?.value === id)
+      ?.get('draggingLabel');
+    label?.setValue(this.toggleLabel(label.value));
+
+    return false;
+  }
+
+  onClickToggleConnections(id: string) {
+    this.browserJsPlumbInstance.toggleVisible(document.getElementById(id)!);
+
+    return false;
+  }
+
+  onClickDetach(id: string) {
+    this.browserJsPlumbInstance.deleteConnectionsForElement(
+      document.getElementById(id)!
+    );
+
+    return false;
+  }
+
+  private toggleLabel(label: string): string {
+    if (label.startsWith('enable')) {
+      return 'disable dragging';
+    } else {
+      return 'enable dragging';
+    }
   }
 }
