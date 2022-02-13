@@ -5,8 +5,9 @@
     [formGroup]="nodeGroup" domChange (domChange)="onDomChange($event)">
 
     <ng-container *ngFor=" let currentNode of nodes.controls; let i=index" formArrayName="nodes">
-        <div class="window dnd" id="{{currentNode.get('id')?.value}}" style="{{currentNode.get('style')?.value}}">
-            {{currentNode.get('title')?.value}}
+        <div class="window dnd" id="{{currentNode.get('id')?.value}}" style="{{currentNode.get('style')?.value}}"
+            [formGroupName]="i">
+            <input formControlName='title' id="{{'title'+i}}" type="text" class="" placeholder="Node" />
             <br /><br /><a href="#" class="cmdLink hide" rel="{{currentNode.get('id')?.value}}"
                 (click)="onClickToggleConnections(currentNode.get('id')?.value)">toggle
                 connections</a><br /><a href="#" class="cmdLink drag" rel="{{currentNode.get('id')?.value}}"
@@ -14,7 +15,8 @@
                 href="/chart" class="cmdLink detach" rel="{{currentNode.get('id')?.value}}"
                 (click)="onClickDetach(currentNode.get('id')?.value)">detach
                 all</a>
-            <p>{{currentNode.get('desc')?.value}}</p>
+
+            <input formControlName='desc' id="{{'desc'+i}}" type="text" class="" placeholder="Node" />
         </div>
     </ng-container>
 
