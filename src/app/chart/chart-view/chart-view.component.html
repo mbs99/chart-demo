@@ -5,19 +5,32 @@
     [formGroup]="nodeGroup" domChange (domChange)="onDomChange($event)">
 
     <ng-container *ngFor=" let currentNode of nodes.controls; let i=index" formArrayName="nodes">
-        <div class="window dnd" id="{{currentNode.get('id')?.value}}" style="{{currentNode.get('style')?.value}}"
+        <mat-card class="window dnd" id="{{currentNode.get('id')?.value}}" style="{{currentNode.get('style')?.value}}"
             [formGroupName]="i">
-            <input formControlName='title' id="{{'title'+i}}" type="text" class="" placeholder="Node" />
-            <br /><br /><a href="#" class="cmdLink hide" rel="{{currentNode.get('id')?.value}}"
-                (click)="onClickToggleConnections(currentNode.get('id')?.value)">toggle
-                connections</a><br /><a href="#" class="cmdLink drag" rel="{{currentNode.get('id')?.value}}"
-                (click)="onClickDrag(currentNode.get('id')?.value)">{{currentNode.get('draggingLabel')?.value}}</a><br /><a
-                href="/chart" class="cmdLink detach" rel="{{currentNode.get('id')?.value}}"
-                (click)="onClickDetach(currentNode.get('id')?.value)">detach
-                all</a>
-
-            <input formControlName='desc' id="{{'desc'+i}}" type="text" class="" placeholder="Node" />
-        </div>
+            <mat-card-content>
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName='title' id="{{'title'+i}}" type="text" class=""
+                        placeholder="Node" />
+                </mat-form-field>
+                <mat-label>Description</mat-label>
+                <input matInput formControlName='desc' id="{{'desc'+i}}" type="text" class="" placeholder="Node" />
+            </mat-card-content>
+            <mat-card-actions>
+                <button matTooltip="hide/show connections" mat-icon-button aria-label="toggle
+                connections" (click)="onClickToggleConnections(currentNode.get('id')?.value)">
+                    <mat-icon>visibility_off</mat-icon>
+                </button>
+                <button matTooltip="enable/disable dragging" mat-icon-button aria-label="toggle drag"
+                    (click)="onClickDrag(currentNode.get('id')?.value)">
+                    <mat-icon>drag_indicator</mat-icon>
+                </button>
+                <button matTooltip="delete connections" mat-icon-button aria-label="detach all"
+                    (click)="onClickDetach(currentNode.get('id')?.value)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-card-actions>
+        </mat-card>
     </ng-container>
 
 </div>
