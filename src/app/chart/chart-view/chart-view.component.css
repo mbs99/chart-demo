@@ -7,24 +7,6 @@
   touch-action: none;
 }
 
-/** ELEMENT POSITIONS **/
-#dragDropWindow1 {
-  top: 76px;
-  left: 100px;
-}
-#dragDropWindow2 {
-  top: 148px;
-  left: 600px;
-}
-#dragDropWindow3 {
-  top: 340px;
-  left: 100px;
-}
-#dragDropWindow4 {
-  top: 416px;
-  left: 600px;
-}
-
 /** ELEMENTS **/
 .drag-drop-demo .window {
   z-index: 24;

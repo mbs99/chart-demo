@@ -1,6 +1,7 @@
 <div>
-    <button (click)="toggleExportTrigger()">toggleExport</button>
-    <button (click)="loadChart()">load</button>
+    <button mat-button (click)="createChart()">New</button>
+    <button mat-button (click)="loadChart()">Load</button>
+    <button mat-button *ngIf="this.chart" (click)="toggleExportTrigger()">Save</button>
 </div>
 
 <app-chart-view [chart]="chart" [triggerExport]="exportTrigger" (export)="storeChart($event)"></app-chart-view>

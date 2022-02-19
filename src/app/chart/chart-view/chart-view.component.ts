@@ -10,12 +10,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormGroup,
-} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BrowserJsPlumbInstance } from '@jsplumb/browser-ui';
 import { v4 as uuidv4 } from 'uuid';
 import { ChartDto } from '../model/chart.dto';
@@ -25,7 +20,8 @@ import { NodeDto } from '../model/node.dto';
 import { ConnectionDto } from '../model/connection.dto';
 import { EndpointDto } from '../model/endpoint.dto';
 import { RectDto } from '../model/rect.dto';
-import { zipWith } from 'rxjs';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ConnectionSettingsComponent } from '../connection-settings/connection-settings.component';
 
 @Component({
   selector: 'app-chart-view',
@@ -35,8 +31,8 @@ import { zipWith } from 'rxjs';
 export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('canvas') canvasElement!: ElementRef;
 
-  @Output('export') exportEvent = new EventEmitter<string>();
-  @Input() chart: string = '';
+  @Output('export') exportEvent = new EventEmitter<ChartDto>();
+  @Input() chart?: ChartDto;
   @Input() triggerExport: boolean = false;
 
   nodeGroup: FormGroup;
@@ -44,9 +40,12 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
 
   private browserJsPlumbInstance!: BrowserJsPlumbInstance;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private dialog: MatDialog) {
     this.nodes = this.formBuilder.array([]);
-    this.nodeGroup = this.formBuilder.group({ nodes: this.nodes });
+    this.nodeGroup = this.formBuilder.group({
+      title: formBuilder.control(''),
+      nodes: this.nodes,
+    });
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['triggerExport'] && !changes['triggerExport'].firstChange) {
@@ -59,7 +58,7 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnInit(): void {
-    for (let x = 0; x < 3; ++x) {
+    /*for (let x = 0; x < 3; ++x) {
       const node = this.formBuilder.group({
         id: uuidv4(),
         title: 'Test' + x,
@@ -71,7 +70,7 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
       });
 
       this.nodes.insert(0, node);
-    }
+    }*/
 
     this.onChanges();
   }
@@ -88,8 +87,6 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
       anchors: [AnchorLocations.TopRight, AnchorLocations.TopRight],
     });
 
-    //this.browserJsPlumbInstance.manageAll('.dnd');
-
     this.browserJsPlumbInstance.batch(() => {
       this.browserJsPlumbInstance.bind(
         'connection:click',
@@ -97,11 +94,21 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
           if (component instanceof Connection) {
             const connection = component as Connection;
 
-            const label = window.prompt('Set label:');
+            const dialogConfig = new MatDialogConfig();
+            dialogConfig.data = {
+              title: connection.getLabel(),
+              description: '',
+            };
+            const dialogRef = this.dialog.open(
+              ConnectionSettingsComponent,
+              dialogConfig
+            );
 
-            if (label) {
-              connection.setLabel(label);
-            }
+            dialogRef.afterClosed().subscribe((data) => {
+              if (data?.title) {
+                connection.setLabel(data?.title);
+              }
+            });
           }
         }
       );
@@ -110,14 +117,6 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
         'connection',
         (info, originalEvent) => {}
       );
-
-      this.nodes.controls.forEach((control) => {
-        this.browserJsPlumbInstance.addEndpoint(
-          document.getElementById(control.get('id')?.value)!,
-          { anchor: [0.5, 1, 0, 1] },
-          this.createEndpoint()
-        );
-      });
     });
   }
 
@@ -176,7 +175,12 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
     });
 
     this.exportEvent.emit(
-      JSON.stringify(new ChartDto('Test', nodes, connections))
+      new ChartDto(
+        this.chart?.id ? this.chart.id : uuidv4().toString(),
+        this.nodeGroup.controls['title'].value,
+        nodes,
+        connections
+      )
     );
   }
 
@@ -187,9 +191,9 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.browserJsPlumbInstance.reset();
 
-    const chart: ChartDto = JSON.parse(this.chart);
+    this.nodeGroup.controls['title'].setValue(this.chart?.title);
 
-    chart.nodes.forEach((node) => {
+    this.chart?.nodes.forEach((node) => {
       const nodeGroup = this.formBuilder.group({
         id: uuidv4(),
         title: node.title,
@@ -232,9 +236,16 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
                 endpoint.getId() == e.id;
               })
           ) {
+            this.browserJsPlumbInstance.unmanage(e);
+
+            this.browserJsPlumbInstance.manage(
+              document.getElementById(e.id)!,
+              e.id
+            );
+
             this.browserJsPlumbInstance.addEndpoint(
               document.getElementById(e.id)!,
-              { anchor: [0.5, 1, 0, 1] },
+              { anchor: [0.5, 1, 0, 1], uuid: e.id },
               this.createEndpoint()
             );
           }

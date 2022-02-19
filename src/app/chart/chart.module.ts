@@ -9,9 +9,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConnectionSettingsComponent } from './connection-settings/connection-settings.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [ChartComponent, ChartViewComponent, DomChangeDirective],
+  declarations: [
+    ChartComponent,
+    ChartViewComponent,
+    DomChangeDirective,
+    ConnectionSettingsComponent,
+  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -20,6 +27,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatDialogModule,
   ],
   exports: [ChartComponent],
 })

@@ -5,6 +5,7 @@ import { ChartComponent } from './chart/chart.component';
 
 const routes: Routes = [
   { path: 'chart', component: ChartComponent },
+  { path: 'chart/:id', component: ChartComponent },
   { path: '', component: AppComponent },
 ];
 

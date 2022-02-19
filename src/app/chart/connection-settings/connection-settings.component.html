@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Connection</h2>
+<mat-dialog-content class="" [formGroup]="connectionSettingsGroups">
+    <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName='title' type="text" class="" placeholder="Node" />
+    </mat-form-field>
+    <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName='description' type="text" class="" placeholder="Node" />
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Delete connection</button>
+    <button mat-button (click)="onClickCancel()">Cancel</button>
+    <button mat-button cdkFocusInitial (click)=" onClickOk()">Ok</button>
+</mat-dialog-actions>

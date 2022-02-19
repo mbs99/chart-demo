@@ -11,8 +11,11 @@ import { ActivatedRoute } from '@angular/router';
 import { BrowserJsPlumbInstance } from '@jsplumb/browser-ui';
 import { AnchorLocations } from '@jsplumb/common';
 import { EndpointOptions } from '@jsplumb/core';
+import { deserialize, serialize } from 'class-transformer';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { LocalStorageService } from '../local-storage.service';
+import { StorageService } from '../storage-service';
 import { ChartDto } from './model/chart.dto';
 import { ConnectionDto } from './model/connection.dto';
 import { EndpointDto } from './model/endpoint.dto';
@@ -28,13 +31,19 @@ export class ChartComponent implements OnInit, OnDestroy {
   private chartId: string = '';
   private routeSubscription: Subscription;
 
-  chart: string = '{}';
+  chart?: ChartDto;
   exportTrigger: boolean = false;
-  storedChart: string = '';
 
-  constructor(private avtivatedRoute: ActivatedRoute) {
-    this.routeSubscription = avtivatedRoute.params.subscribe((params) => {
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private storageService: LocalStorageService
+  ) {
+    this.routeSubscription = activatedRoute.params.subscribe((params) => {
       this.chartId = params['id'];
+
+      if (this.chartId) {
+        this.loadChart();
+      }
     });
   }
 
@@ -44,8 +53,8 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {}
 
-  storeChart(json: string) {
-    this.storedChart = json;
+  storeChart(dto: ChartDto) {
+    this.storageService.saveChart(dto);
   }
 
   toggleExportTrigger() {
@@ -53,6 +62,15 @@ export class ChartComponent implements OnInit, OnDestroy {
   }
 
   loadChart() {
-    this.chart = this.storedChart;
+    if ('' !== this.chartId) {
+      const storedChart = this.storageService.findChart(this.chartId);
+      if (storedChart) {
+        this.chart = storedChart;
+      }
+    }
+  }
+
+  createChart() {
+    this.chart = new ChartDto(uuidv4().toString(), 'Test', [], []);
   }
 }
