@@ -5,6 +5,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -21,14 +22,20 @@ import { ConnectionDto } from '../model/connection.dto';
 import { EndpointDto } from '../model/endpoint.dto';
 import { RectDto } from '../model/rect.dto';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { ConnectionSettingsComponent } from '../connection-settings/connection-settings.component';
+import {
+  ConnectionSettingsComponent,
+  ConnectionSettingsComponentModel,
+} from '../connection-settings/connection-settings.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-chart-view',
   templateUrl: './chart-view.component.html',
   styleUrls: ['./chart-view.component.css'],
 })
-export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
+export class ChartViewComponent
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
+{
   @ViewChild('canvas') canvasElement!: ElementRef;
 
   @Output('export') exportEvent = new EventEmitter<ChartDto>();
@@ -40,6 +47,8 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
 
   private browserJsPlumbInstance!: BrowserJsPlumbInstance;
 
+  private readonly destroySubject$ = new Subject<void>();
+
   constructor(private formBuilder: FormBuilder, private dialog: MatDialog) {
     this.nodes = this.formBuilder.array([]);
     this.nodeGroup = this.formBuilder.group({
@@ -47,6 +56,12 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
       nodes: this.nodes,
     });
   }
+
+  ngOnDestroy(): void {
+    this.destroySubject$.next();
+    this.destroySubject$.unsubscribe();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['triggerExport'] && !changes['triggerExport'].firstChange) {
       this.toJson();
@@ -58,20 +73,6 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnInit(): void {
-    /*for (let x = 0; x < 3; ++x) {
-      const node = this.formBuilder.group({
-        id: uuidv4(),
-        title: 'Test' + x,
-        desc: 'Dummy',
-        top: 0,
-        left: x * 20,
-        style: `top: 0px; left:${x}${5}px`,
-        draggingLabel: 'disable dragging',
-      });
-
-      this.nodes.insert(0, node);
-    }*/
-
     this.onChanges();
   }
 
@@ -104,11 +105,22 @@ export class ChartViewComponent implements OnInit, AfterViewInit, OnChanges {
               dialogConfig
             );
 
-            dialogRef.afterClosed().subscribe((data) => {
-              if (data?.title) {
-                connection.setLabel(data?.title);
-              }
-            });
+            dialogRef
+              .afterClosed()
+              .pipe(takeUntil(this.destroySubject$))
+              .subscribe((data: ConnectionSettingsComponentModel) => {
+                if (data?.title) {
+                  connection.setLabel(data?.title);
+                }
+
+                if (data?.description) {
+                  connection.setData(data.description);
+                }
+
+                if (data?.deleteConnection) {
+                  this.browserJsPlumbInstance.deleteConnection(connection);
+                }
+              });
           }
         }
       );
