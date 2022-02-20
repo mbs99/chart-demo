@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 
 @Directive({
-  selector: '[domChange]',
+  selector: '[appDomChange]',
 })
 export class DomChangeDirective implements OnDestroy {
   private changes: MutationObserver;

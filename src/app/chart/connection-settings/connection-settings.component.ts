@@ -13,7 +13,7 @@ export interface ConnectionSettingsComponentModel {
   templateUrl: './connection-settings.component.html',
   styleUrls: ['./connection-settings.component.css'],
 })
-export class ConnectionSettingsComponent implements OnInit {
+export class ConnectionSettingsComponent {
   connectionSettingsGroups: FormGroup;
 
   constructor(
@@ -26,8 +26,6 @@ export class ConnectionSettingsComponent implements OnInit {
       description: formBuilder.control(data.description),
     });
   }
-
-  ngOnInit(): void {}
 
   onClickOk() {
     const returnValue: ConnectionSettingsComponentModel = {

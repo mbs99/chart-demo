@@ -27,7 +27,7 @@ import { RectDto } from './model/rect.dto';
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.css'],
 })
-export class ChartComponent implements OnInit, OnDestroy {
+export class ChartComponent implements OnDestroy {
   private chartId: string = '';
   private routeSubscription: Subscription;
 
@@ -50,8 +50,6 @@ export class ChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
   }
-
-  ngOnInit(): void {}
 
   storeChart(dto: ChartDto) {
     this.storageService.saveChart(dto);

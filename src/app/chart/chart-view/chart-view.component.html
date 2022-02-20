@@ -6,8 +6,8 @@
             <input matInput formControlName='title' type="text" class="" placeholder="Title" />
         </mat-form-field>
     </div>
-    <div class="jtk-demo-canvas canvas-wide drag-drop-demo jtk-surface jtk-surface-nopan" id="canvas" #canvas domChange
-        (domChange)="onDomChange($event)">
+    <div class="jtk-demo-canvas canvas-wide drag-drop-demo jtk-surface jtk-surface-nopan" id="canvas" #canvas
+        appDomChange (domChange)="onDomChange($event)">
 
         <ng-container *ngFor=" let currentNode of nodes.controls; let i=index" formArrayName="nodes">
             <mat-card class="window" id="{{currentNode.get('id')?.value}}" style="{{currentNode.get('style')?.value}}"

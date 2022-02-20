@@ -38,7 +38,7 @@ export class ChartViewComponent
 {
   @ViewChild('canvas') canvasElement!: ElementRef;
 
-  @Output('export') exportEvent = new EventEmitter<ChartDto>();
+  @Output() exportEvent = new EventEmitter<ChartDto>();
   @Input() chart?: ChartDto;
   @Input() triggerExport: boolean = false;
 
