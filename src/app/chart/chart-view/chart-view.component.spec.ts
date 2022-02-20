@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { ChartViewComponent } from './chart-view.component';
 
@@ -8,9 +10,9 @@ describe('ChartViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChartViewComponent ]
-    })
-    .compileComponents();
+      imports: [ReactiveFormsModule, MatDialogModule],
+      declarations: [ChartViewComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
