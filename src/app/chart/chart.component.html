@@ -4,4 +4,4 @@
     <button mat-button *ngIf="this.chart" (click)="toggleExportTrigger()">Save</button>
 </div>
 
-<app-chart-view [chart]="chart" [triggerExport]="exportTrigger" (export)="storeChart($event)"></app-chart-view>
+<app-chart-view [chart]="chart" [triggerExport]="exportTrigger" (exportEvent)="storeChart($event)"></app-chart-view>
