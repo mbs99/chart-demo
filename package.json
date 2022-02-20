@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "deploy": "ng deploy --base-href=/angular-ci-cd-with-github-actions/"
+    "deploy": "ng deploy --base-href=/chart-demo/"
   },
   "private": true,
   "dependencies": {
